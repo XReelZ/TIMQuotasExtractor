@@ -53,21 +53,52 @@ namespace TIMQuotasExtractor
         string dataFolder = selectedFolder + "\\Content\\Data";
         if (Directory.Exists(dataFolder))
         {
-          string blueprints = dataFolder + "\\Blueprints.sbc";
-          string components = dataFolder + "\\Components.sbc";
-          string ammoMagazines = dataFolder + "\\AmmoMagazines.sbc";
-          string physcalItems = dataFolder + "\\PhysicalItems.sbc";
-
-          if (!File.Exists(blueprints) || !File.Exists(ammoMagazines) || !File.Exists(physcalItems) || !File.Exists(components))
+          string modsFolder = selectedFolder.Substring(0, selectedFolder.IndexOf("common\\")) + "workshop\\content\\244850";
+          //
+          List<string> blueprintFiles = new List<string>();
+          List<string> componentFiles = new List<string>();
+          List<string> ammoMagazineFiles = new List<string>();
+          List<string> physcalItemFiles = new List<string>();
+          //
+          blueprintFiles.Add(dataFolder + "\\Blueprints.sbc");
+          componentFiles.Add(dataFolder + "\\Components.sbc");
+          ammoMagazineFiles.Add(dataFolder + "\\AmmoMagazines.sbc");
+          physcalItemFiles.Add(dataFolder + "\\PhysicalItems.sbc");
+          //
+          if (Directory.Exists(modsFolder))
           {
-            MessageBox.Show("Missing required data structure, please reinstall Windows or contact someone smart :)\r\n JK you can contact the creator of this tool :P");
+            foreach (string folder in Directory.GetDirectories(modsFolder))
+            {
+              string modsDataFolder = folder + "\\Data";
+              if (Directory.Exists(modsDataFolder))
+              {
+                string[] modDataFiles = Directory.GetFiles(modsDataFolder);
+                foreach (string file in modDataFiles)
+                {
+                  string fName = Path.GetFileName(file);
+                  if (fName.ToLower().Contains("blueprint"))
+                    blueprintFiles.Add(modsDataFolder + "\\" + fName);
+                  else if (fName.ToLower().Contains("components"))
+                    componentFiles.Add(modsDataFolder + "\\" + fName);
+                  else if (fName.ToLower().Contains("ammomagazines"))
+                    ammoMagazineFiles.Add(modsDataFolder + "\\" + fName);
+                  else if (fName.ToLower().Contains("physicalitems"))
+                    physcalItemFiles.Add(modsDataFolder + "\\" + fName);
+                }
+              }
+            }
           }
-          else
+          //
+          //if (!File.Exists(blueprints) || !File.Exists(ammoMagazines) || !File.Exists(physcalItems) || !File.Exists(components))
+          //{
+          //  MessageBox.Show("Missing required data structure, please reinstall Windows or contact someone smart :)\r\n JK you can contact the creator of this tool :P");
+          //}
+          //else
           {
             List<Blueprint> blueprintsList = new List<Blueprint>();
             List<Item> itemsList = new List<Item>();
             //
-            ExtractQuotas(blueprints, ammoMagazines, physcalItems, components, blueprintsList, itemsList);
+            ExtractQuotas(blueprintFiles, ammoMagazineFiles, physcalItemFiles, componentFiles, blueprintsList, itemsList);
             if (blueprintsList.Count > 0 && itemsList.Count > 0)
             {
               itemsList = itemsList.OrderBy(x => x.SubTypeID).ToList();
@@ -135,25 +166,37 @@ namespace TIMQuotasExtractor
           MessageBox.Show("Can't find Data folder \r\nPlease select Space Engineers main folder.");
       }
     }
-    private void ExtractQuotas(string aBlueprints, string aAmmoMagazines, string aPhysicalItems, string aComponents, List<Blueprint> aBlueprintsList, List<Item> aItemsList)
+    private void ExtractQuotas(List<string> aBlueprints, List<string> aAmmoMagazines, List<string> aPhysicalItems, List<string> aComponents, List<Blueprint> aBlueprintsList, List<Item> aItemsList)
     {
-      string blueprintsContent = File.ReadAllText(aBlueprints);
-      ExtractBlueprints(blueprintsContent, aBlueprintsList);
-      //                                         
-      string ammoMagazinesContent = File.ReadAllText(aAmmoMagazines);
-      ExtractItemIDs(ammoMagazinesContent, "AMMOMAGAZINE", aItemsList);
-      //
-      string physicalItemsContent = File.ReadAllText(aPhysicalItems);
-      ExtractItemIDs(physicalItemsContent,"PHYSICALITEM", aItemsList);
+      foreach (string blueprint in aBlueprints)
+      {
+        string blueprintsContent = File.ReadAllText(blueprint);
+        ExtractBlueprints(blueprintsContent, aBlueprintsList);
+      }
+      //    
+      foreach (string ammoMagazine in aAmmoMagazines)
+      {
+        string ammoMagazinesContent = File.ReadAllText(ammoMagazine);
+        ExtractItemIDs(ammoMagazinesContent, "AMMOMAGAZINE", aItemsList);
+      }
+      //  
+      foreach (string physicalItem in aPhysicalItems)
+      {
+        string physicalItemsContent = File.ReadAllText(physicalItem);
+        ExtractItemIDs(physicalItemsContent, "PHYSICALITEM", aItemsList);
+      }
       //
       // Scrap has special place in my heart as it is same as the others but different !!!!!!
       Item scrap = new Item();
       scrap.TypeID = "Ore";
       scrap.SubTypeID = "Scrap";
       aItemsList.Add(scrap);
-      //
-      string componentsContent = File.ReadAllText(aComponents);
-      ExtractItemIDs(componentsContent,"COMPONENT", aItemsList);
+      //  
+      foreach (string component in aComponents)
+      {
+        string componentsContent = File.ReadAllText(component);
+        ExtractItemIDs(componentsContent, "COMPONENT", aItemsList);
+      }
     }
     private void ExtractBlueprints(string aSource, List<Blueprint> aBlueprints)
     {

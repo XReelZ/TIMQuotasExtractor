@@ -38,7 +38,7 @@
       // 
       // btnSelectFolder
       // 
-      this.btnSelectFolder.Location = new System.Drawing.Point(13, 86);
+      this.btnSelectFolder.Location = new System.Drawing.Point(13, 42);
       this.btnSelectFolder.Name = "btnSelectFolder";
       this.btnSelectFolder.Size = new System.Drawing.Size(75, 23);
       this.btnSelectFolder.TabIndex = 0;
@@ -53,14 +53,14 @@
       // lblSelectedFolder
       // 
       this.lblSelectedFolder.AutoSize = true;
-      this.lblSelectedFolder.Location = new System.Drawing.Point(94, 91);
+      this.lblSelectedFolder.Location = new System.Drawing.Point(94, 47);
       this.lblSelectedFolder.Name = "lblSelectedFolder";
       this.lblSelectedFolder.Size = new System.Drawing.Size(0, 13);
       this.lblSelectedFolder.TabIndex = 1;
       // 
       // btnExtractQuotas
       // 
-      this.btnExtractQuotas.Location = new System.Drawing.Point(13, 116);
+      this.btnExtractQuotas.Location = new System.Drawing.Point(13, 72);
       this.btnExtractQuotas.Name = "btnExtractQuotas";
       this.btnExtractQuotas.Size = new System.Drawing.Size(75, 23);
       this.btnExtractQuotas.TabIndex = 2;
@@ -73,9 +73,9 @@
       this.label1.AutoSize = true;
       this.label1.Location = new System.Drawing.Point(13, 13);
       this.label1.Name = "label1";
-      this.label1.Size = new System.Drawing.Size(35, 13);
+      this.label1.Size = new System.Drawing.Size(191, 13);
       this.label1.TabIndex = 3;
-      this.label1.Text = "label1";
+      this.label1.Text = "Select Main folder of Space Engineers ";
       // 
       // dlgSave
       // 
@@ -86,7 +86,7 @@
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-      this.ClientSize = new System.Drawing.Size(611, 151);
+      this.ClientSize = new System.Drawing.Size(625, 105);
       this.Controls.Add(this.label1);
       this.Controls.Add(this.btnExtractQuotas);
       this.Controls.Add(this.lblSelectedFolder);
