@@ -116,7 +116,7 @@ namespace TIMQuotasExtractor
                 string fName = dlgSave.FileName;
                 foreach (Item item in itemsList)
                 {
-                  Blueprint blueprint = blueprintsList.SingleOrDefault(s => s.ItemSubTypeID == item.SubTypeID);
+                  Blueprint blueprint = blueprintsList.FirstOrDefault(s => s.ItemSubTypeID == item.SubTypeID);
                   string bpSubTypeID = "";
                   string label = "";
                   if (blueprint != null)

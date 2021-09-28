@@ -5,3 +5,5 @@
 /.vs/TIMQuotasExtractor/v16
 /TIMQuotasExtractor/bin/Debug
 /TIMQuotasExtractor/obj/Debug
+/TIMQuotasExtractor/bin/Release
+/TIMQuotasExtractor/obj/Release
