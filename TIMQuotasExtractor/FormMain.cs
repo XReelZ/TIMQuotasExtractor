@@ -36,11 +36,6 @@ namespace TIMQuotasExtractor
         selectedFolder = dlgBrowse.SelectedPath;
         lblSelectedFolder.Text = dlgBrowse.SelectedPath;
       }
-      //else
-      //{
-      //  selectedFolder = "";
-      //  lblSelectedFolder.Text = "";
-      //}
     }
     private void Execute()
     {
@@ -89,56 +84,53 @@ namespace TIMQuotasExtractor
             }
           }
           //
-          //if (!File.Exists(blueprints) || !File.Exists(ammoMagazines) || !File.Exists(physcalItems) || !File.Exists(components))
-          //{
-          //  MessageBox.Show("Missing required data structure, please reinstall Windows or contact someone smart :)\r\n JK you can contact the creator of this tool :P");
-          //}
-          //else
+          List<Blueprint> blueprintsList = new List<Blueprint>();
+          List<Item> itemsList = new List<Item>();
+          //
+          ExtractQuotas(blueprintFiles, ammoMagazineFiles, physcalItemFiles, componentFiles, blueprintsList, itemsList);
+          if (blueprintsList.Count > 0 && itemsList.Count > 0)
           {
-            List<Blueprint> blueprintsList = new List<Blueprint>();
-            List<Item> itemsList = new List<Item>();
+            itemsList = itemsList.OrderBy(x => x.SubTypeID).ToList();
             //
-            ExtractQuotas(blueprintFiles, ammoMagazineFiles, physcalItemFiles, componentFiles, blueprintsList, itemsList);
-            if (blueprintsList.Count > 0 && itemsList.Count > 0)
+            if (dlgSave.ShowDialog(this) == DialogResult.OK)
             {
-              itemsList = itemsList.OrderBy(x => x.SubTypeID).ToList();
+              string ores = "Ore/\r\n";
+              string ingots = "Ingot/\r\n";
+              string componentsStr = "Component/\r\n";
+              string magazines = "AmmoMagazine/\r\n";
+              string physicalItemsStr = "PhysicalGunObject/\r\n";
+              string gasContainerObjects = "GasContainerObject/\r\n";
+              string oxygenContainerObjects = "OxygenContainerObject/\r\n";
               //
-              if (dlgSave.ShowDialog(this) == DialogResult.OK)
+              string fName = dlgSave.FileName;
+
+              //  
+              foreach (Item item in itemsList)
               {
-                string ores = "Ore/\r\n";
-                string ingots = "Ingot/\r\n";
-                string componentsStr = "Component/\r\n";
-                string magazines = "AmmoMagazine/\r\n";
-                string physicalItemsStr = "PhysicalGunObject/\r\n";
-                string gasContainerObjects = "GasContainerObject/\r\n";
-                string oxygenContainerObjects = "OxygenContainerObject/\r\n";
+                if (item.TypeID.ToUpper() == "ORE")
+                  ores += "/" + item.SubTypeID + "\r\n";
                 //
-                string fName = dlgSave.FileName;
-                foreach (Item item in itemsList)
+                if (item.TypeID.ToUpper() == "INGOT")
+                  ingots += "/" + item.SubTypeID + ",0,0%\r\n";
+              }
+              // 
+              foreach (Blueprint blueprint in blueprintsList)
+              {
+                Item item = itemsList.FirstOrDefault(s => s.SubTypeID == blueprint.ItemSubTypeID);
+                string bpSubTypeID = "";
+                string label = "";
+                if (item != null)
                 {
-                  Blueprint blueprint = blueprintsList.FirstOrDefault(s => s.ItemSubTypeID == item.SubTypeID);
-                  string bpSubTypeID = "";
-                  string label = "";
-                  if (blueprint != null)
-                  {
-                    if (item.SubTypeID != blueprint.BpSubTypeID)
-                      bpSubTypeID = blueprint.BpSubTypeID;
-                    //
-                    if (bpSubTypeID.Length > 22)
-                    {
-                      label = bpSubTypeID;
-                      label = label.Replace("Component", "");
-                      label = label.Replace("Generator", "Gen");
-                      label = label.Replace("Communication", "Comm");
-                    }
-                  }
-                  //   
-                  if (item.TypeID.ToUpper() == "ORE")
-                    ores += "/" + item.SubTypeID + "\r\n";
+                  if (item.SubTypeID != blueprint.BpSubTypeID)
+                    bpSubTypeID = blueprint.BpSubTypeID;
                   //
-                  if (item.TypeID.ToUpper() == "INGOT")
-                    ingots += "/" + item.SubTypeID + ",0,0%\r\n";
-                  //  
+                  if (bpSubTypeID.Length > 22)
+                  {
+                    label = bpSubTypeID;
+                    label = label.Replace("Component", "");
+                    label = label.Replace("Generator", "Gen");
+                    label = label.Replace("Communication", "Comm");
+                  } 
                   if (item.TypeID.ToUpper() == "AMMOMAGAZINE")
                     magazines += "/" + item.SubTypeID + ",0,0%,," + bpSubTypeID + "\r\n";
                   //
@@ -154,11 +146,11 @@ namespace TIMQuotasExtractor
                   if (item.TypeID.ToUpper() == "PHYSICALGUNOBJECT")
                     physicalItemsStr += "/" + item.SubTypeID + ",0,0%," + label + "," + bpSubTypeID + "\r\n";
                 }
-                //
-                string content = magazines + "\r\n" + componentsStr + "\r\n" + gasContainerObjects + "\r\n" + ores + "\r\n" + ingots + "\r\n" + oxygenContainerObjects + "\r\n" + physicalItemsStr;
-                File.WriteAllText(fName, content);
-                MessageBox.Show("Success!");
               }
+              //
+              string content = magazines + "\r\n" + componentsStr + "\r\n" + gasContainerObjects + "\r\n" + ores + "\r\n" + ingots + "\r\n" + oxygenContainerObjects + "\r\n" + physicalItemsStr;
+              File.WriteAllText(fName, content);
+              MessageBox.Show("Success!");
             }
           }
         }
@@ -272,14 +264,8 @@ namespace TIMQuotasExtractor
                       ammo.SubTypeID = id.Value;
                   }
                 }
-
-                if (ammoChild.Name.LocalName.ToUpper() == "CANPLAYERORDER")
-                {
-                  canPlayerOrder = ammoChild.Value.ToUpper() == "TRUE";
-                }
               }
-              if (canPlayerOrder)
-                aItems.Add(ammo);
+              aItems.Add(ammo);
             }
           }
         }
@@ -314,14 +300,8 @@ namespace TIMQuotasExtractor
                       item.SubTypeID = id.Value;
                   }
                 }
-
-                if (ammoChild.Name.LocalName.ToUpper() == "CANPLAYERORDER")
-                {
-                  canPlayerOrder = ammoChild.Value.ToUpper() == "TRUE";
-                }
               }
-              if (canPlayerOrder)
-                aItems.Add(item);
+              aItems.Add(item);
             }
           }
         }
@@ -361,12 +341,8 @@ namespace TIMQuotasExtractor
                       item.SubTypeID = id.Value;
                   }
                 }
-
-                if (xItemChild.Name.LocalName.ToUpper() == "CANPLAYERORDER")
-                  canPlayerOrder = xItemChild.Value.ToUpper() == "TRUE";
               }
-              if (canPlayerOrder)
-                aItems.Add(item);
+              aItems.Add(item);
             }
           }
         }
