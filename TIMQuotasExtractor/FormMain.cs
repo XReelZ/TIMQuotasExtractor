@@ -108,10 +108,16 @@ namespace TIMQuotasExtractor
               foreach (Item item in itemsList)
               {
                 if (item.TypeID.ToUpper() == "ORE")
-                  ores += "/" + item.SubTypeID + "\r\n";
+                {
+                  if(!ores.Contains(item.SubTypeID))
+                    ores += "/" + item.SubTypeID + "\r\n";
+                }
                 //
                 if (item.TypeID.ToUpper() == "INGOT")
-                  ingots += "/" + item.SubTypeID + ",0,0%\r\n";
+                {
+                  if (!ingots.Contains(item.SubTypeID))
+                    ingots += "/" + item.SubTypeID + ",0,0%\r\n";
+                }
               }
               // 
               foreach (Blueprint blueprint in blueprintsList)
