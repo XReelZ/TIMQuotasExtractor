@@ -45,10 +45,13 @@ namespace TIMQuotasExtractor
       }
       else
       {
+        bool vanillaOnly = chbVanilla.Checked;
         string dataFolder = selectedFolder + "\\Content\\Data";
         if (Directory.Exists(dataFolder))
         {
-          string modsFolder = selectedFolder.Substring(0, selectedFolder.IndexOf("common\\")) + "workshop\\content\\244850";
+          string modsFolder = "";
+          if (!vanillaOnly)
+            modsFolder = selectedFolder.Substring(0, selectedFolder.IndexOf("common\\")) + "workshop\\content\\244850";
           //
           List<string> blueprintFiles = new List<string>();
           List<string> componentFiles = new List<string>();
