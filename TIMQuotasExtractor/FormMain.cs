@@ -18,6 +18,7 @@ namespace TIMQuotasExtractor
     public Main()
     {
       InitializeComponent();
+      lblSelectedFolder.Text = "";
     }
 
     private void btnSelectFolder_Click(object sender, EventArgs e)
@@ -82,6 +83,25 @@ namespace TIMQuotasExtractor
                     ammoMagazineFiles.Add(modsDataFolder + "\\" + fName);
                   else if (fName.ToLower().Contains("physicalitems"))
                     physcalItemFiles.Add(modsDataFolder + "\\" + fName);
+                }
+                foreach (string subFolder in Directory.GetDirectories(modsDataFolder))
+                {
+                  if (Directory.Exists(subFolder))
+                  {
+                    string[] modDataSubFiles = Directory.GetFiles(subFolder);
+                    foreach (string subFile in modDataSubFiles)
+                    {
+                      string fName = Path.GetFileName(subFile);
+                      if (fName.ToLower().Contains("blueprint"))
+                        blueprintFiles.Add(subFolder + "\\" + fName);
+                      else if (fName.ToLower().Contains("components"))
+                        componentFiles.Add(subFolder + "\\" + fName);
+                      else if (fName.ToLower().Contains("ammomagazines"))
+                        ammoMagazineFiles.Add(subFolder + "\\" + fName);
+                      else if (fName.ToLower().Contains("physicalitems"))
+                        physcalItemFiles.Add(subFolder + "\\" + fName);
+                    }
+                  }
                 }
               }
             }
